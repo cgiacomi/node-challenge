@@ -6,9 +6,11 @@ module.exports = {
     jwtSecret: '',
   },
   db: {
-    host: '0.0.0.0',
+    host: '127.0.0.1',
     port: 5432,
     database: 'challenge',
+    user: 'example',
+    password: 'example',
   },
   debug: {
     stackSize: 4,

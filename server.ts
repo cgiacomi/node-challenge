@@ -1,11 +1,13 @@
 import config from 'config';
 import context from './middleware/context';
+import { router as expenseRoutes } from '@nc/domain-expense';
 import express from 'express';
 import gracefulShutdown from '@nc/utils/graceful-shutdown';
 import helmet from 'helmet';
 import Logger from '@nc/utils/logging';
 import security from './middleware/security';
 import { router as userRoutes } from '@nc/domain-user';
+
 import { createServer as createHTTPServer, Server } from 'http';
 import { createServer as createHTTPSServer, Server as SecureServer } from 'https';
 
@@ -30,10 +32,12 @@ app.use(context);
 app.use(security);
 
 app.use('/user', userRoutes);
+app.use('/expense', expenseRoutes);
 
-app.use(function(err, req, res) {
-  res.status(500).json(err);
-});
+// app.use(function(err, req: Request, res: Response) {
+//   console.log(typeof res);
+//   res.status(500).json(err);
+// });
 
 server.listen(config.port, () => {
   server.ready = true;
