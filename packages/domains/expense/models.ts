@@ -1,5 +1,6 @@
 import { Expense } from './types';
 import { format } from './formatter';
+import { isUUID } from 'validator';
 import { readExpense } from './data/db-expense';
 import { to } from '@nc/utils/async';
 
@@ -8,6 +9,10 @@ import { BadRequest, InternalError, NotFound } from '@nc/utils/errors';
 export async function getExpensesForUser(userId?: string): Promise<Expense[]> {
   if (!userId) {
     throw BadRequest('userId property is missing.');
+  }
+
+  if (!isUUID(userId)) {
+    throw BadRequest('userId property is not a valid UUID.');
   }
 
   const [dbError, rawExpenses] = await to(readExpense(userId));
