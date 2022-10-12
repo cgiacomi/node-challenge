@@ -2,9 +2,10 @@ import { format } from './formatter';
 import { readUser } from './data/db-user';
 import { to } from '@nc/utils/async';
 import { User } from './types';
+
 import { BadRequest, InternalError, NotFound } from '@nc/utils/errors';
 
-export async function getUserDetails(userId): Promise<User> {
+export async function getUserDetails(userId?: string): Promise<User> {
   if (!userId) {
     throw BadRequest('userId property is missing.');
   }

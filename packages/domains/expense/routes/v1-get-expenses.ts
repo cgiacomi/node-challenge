@@ -1,6 +1,6 @@
 import { ApiError } from '@nc/utils/errors';
 import { getExpensesForUser } from '../models';
-import { secureTrimMany } from '../formatter';
+import { secureTrim } from '../formatter';
 import { to } from '@nc/utils/async';
 
 import { NextFunction, Request, Response, Router } from 'express';
@@ -19,5 +19,5 @@ router.get('/expenses-for-user', async (req: Request, res: Response, next: NextF
     return res.json({});
   }
 
-  return res.json(secureTrimMany(expenseDetails));
+  return res.json(secureTrim(expenseDetails));
 });

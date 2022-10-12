@@ -7,3 +7,10 @@ export interface Expense {
   date_created: string
   status: string
 }
+
+export interface CleanExpense {
+  merchant_name: string
+  amount_in_cents: string
+  currency: string
+  status: string
+}

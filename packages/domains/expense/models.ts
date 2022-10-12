@@ -1,5 +1,5 @@
 import { Expense } from './types';
-import { formatMany } from './formatter';
+import { format } from './formatter';
 import { readExpense } from './data/db-expense';
 import { to } from '@nc/utils/async';
 
@@ -20,5 +20,5 @@ export async function getExpensesForUser(userId?: string): Promise<Expense[]> {
     throw NotFound(`Could not find expenses with for user with id ${userId}`);
   }
 
-  return formatMany(rawExpenses);
+  return format(rawExpenses);
 }
