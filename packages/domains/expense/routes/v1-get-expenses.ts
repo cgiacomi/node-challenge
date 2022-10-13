@@ -17,8 +17,8 @@ type QueryParams = {
 
 router.get('/expenses-for-user', async (req: Request<any, any, any, QueryParams>, res: Response, next: NextFunction) => {
   const userId = req.query?.userId;
-  const page = parseInt(req.query?.page) || 1;
-  const limit = parseInt(req.query?.limit) || 10;
+  const page = Math.abs(parseInt(req.query?.page)) || 1;
+  const limit = Math.abs(parseInt(req.query?.limit)) || 10;
 
   const opts: Options = { page, limit };
 

@@ -72,6 +72,20 @@ describe('Given existing expenses for a user in the database', () => {
         })
         .end(done);
     });
+
+    test('Expense route should return 1 result when limit is set to a negative number', (done) => {
+      Api.get('/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&limit=-1')
+        .expect(200)
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect((res) => {
+          assert.equal(res.body.length, 1);
+          assert(res.body[0].hasOwnProperty('merchant_name'));
+          assert(res.body[0].hasOwnProperty('amount_in_cents'));
+          assert(res.body[0].hasOwnProperty('currency'));
+          assert(res.body[0].hasOwnProperty('status'));
+        })
+        .end(done);
+    });
   });
 
   describe('Get expenses for a specific user and page the results', () => {
@@ -137,6 +151,24 @@ describe('Given existing expenses for a user in the database', () => {
       // meaningful. (sorry for repeating this note.)
 
       Api.get('/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&limit=1&page=0')
+        .expect(200)
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect((res) => {
+          assert.equal(res.body.length, 1);
+          assert(res.body[0].hasOwnProperty('merchant_name'));
+          assert.equal(res.body[0].merchant_name, 'Sliders');
+        })
+        .end(done);
+    });
+
+    test('Expense route should return the first result when page is set to a negative number', (done) => {
+      // CHRIS: This test is a bit contrived, because I am not actively populating the DB in the test.
+      // Ideally one would first seed the DB with a set of records that can be validated in the test.
+      // for this part of the challenge I will assume that the file dump.sql is used for testing purposes.
+      // I will try to expand the test once I have completed the other parts so that the test is more
+      // meaningful. (sorry for repeating this note.)
+
+      Api.get('/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&limit=1&page=-1')
         .expect(200)
         .expect('Content-Type', 'application/json; charset=utf-8')
         .expect((res) => {
