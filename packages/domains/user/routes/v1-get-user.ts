@@ -7,8 +7,12 @@ import { NextFunction, Request, Response, Router } from 'express';
 
 export const router = Router();
 
-router.get('/get-user-details', async (req: Request, res: Response, next: NextFunction) => {
-  const userId = req.query?.userId as string;
+type QueryParams = {
+  userId: string
+};
+
+router.get('/get-user-details', async (req: Request<any, any, any, QueryParams>, res: Response, next: NextFunction) => {
+  const userId = req.query?.userId;
   const [userError, userDetails] = await to(getUserDetails(userId));
 
   if (userError) {

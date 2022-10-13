@@ -14,3 +14,9 @@ export interface CleanExpense {
   currency: string
   status: string
 }
+
+export interface Filter {
+  merchantName: string
+  currency: string
+  status: string
+}

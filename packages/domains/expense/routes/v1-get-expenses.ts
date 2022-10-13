@@ -1,15 +1,28 @@
 import { ApiError } from '@nc/utils/errors';
-import { getExpensesForUser } from '../models';
+import { Filter } from '../types';
 import { secureTrim } from '../formatter';
 import { to } from '@nc/utils/async';
 
+import { getExpensesForUser, Options } from '../models';
 import { NextFunction, Request, Response, Router } from 'express';
 
 export const router = Router();
 
-router.get('/expenses-for-user', async (req: Request, res: Response, next: NextFunction) => {
-  const userId = req.query?.userId as string;
-  const [expenseError, expenseDetails] = await to(getExpensesForUser(userId));
+type QueryParams = {
+  userId: string
+  page: string
+  limit: string
+  filter: Filter
+};
+
+router.get('/expenses-for-user', async (req: Request<any, any, any, QueryParams>, res: Response, next: NextFunction) => {
+  const userId = req.query?.userId;
+  const page = parseInt(req.query?.page) || 1;
+  const limit = parseInt(req.query?.limit) || 10;
+
+  const opts: Options = { page, limit };
+
+  const [expenseError, expenseDetails] = await to(getExpensesForUser(userId, opts));
 
   if (expenseError) {
     return next(new ApiError(expenseError, expenseError.status, `Could not get user details: ${expenseError}`, expenseError.title, req));
