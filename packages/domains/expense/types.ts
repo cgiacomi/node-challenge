@@ -1,3 +1,5 @@
+import { Filter } from '@nc/utils/db';
+
 export interface Expense {
   id: string
   merchant_name: string
@@ -13,10 +15,6 @@ export interface CleanExpense {
   amount_in_cents: string
   currency: string
   status: string
-}
-
-export interface Filter {
-  [index: string]: any
 }
 
 export interface Options {
