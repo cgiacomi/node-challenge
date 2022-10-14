@@ -11,7 +11,7 @@ trim_trailing_whitespace = true
 [{*.ts,*.js}]
 indent_size = 2
 
-[{.babelrc,bower.json,nodemon.json,*.yml}]
+[{*.json,*.yml}]
 indent_size = 2
 
 [Makefile]

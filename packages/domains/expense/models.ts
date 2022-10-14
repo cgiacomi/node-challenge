@@ -4,13 +4,7 @@ import { readExpense } from './data/db-expense';
 import { to } from '@nc/utils/async';
 
 import { BadRequest, InternalError, NotFound } from '@nc/utils/errors';
-import { Expense, Filter } from './types';
-
-export interface Options {
-  page: number
-  limit: number
-  filter?: Filter
-}
+import { Expense, Options } from './types';
 
 export async function getExpensesForUser(userId?: string, options?: Options): Promise<Expense[]> {
   if (!userId) {
@@ -21,9 +15,7 @@ export async function getExpensesForUser(userId?: string, options?: Options): Pr
     throw BadRequest('userId property is not a valid UUID.');
   }
 
-  const [dbError, rawExpenses] = await to(
-    readExpense(userId, { page: options.page, limit: options.limit }, options.filter)
-  );
+  const [dbError, rawExpenses] = await to(readExpense(userId, options));
 
   if (dbError) {
     throw InternalError(`Error fetching data from the DB: ${dbError.message}`);

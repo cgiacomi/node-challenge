@@ -1,18 +1,19 @@
 import { ApiError } from '@nc/utils/errors';
-import { Filter } from '../types';
+import { getExpensesForUser } from '../models';
 import { secureTrim } from '../formatter';
 import { to } from '@nc/utils/async';
 
-import { getExpensesForUser, Options } from '../models';
+import { Filter, Options } from '../types';
 import { NextFunction, Request, Response, Router } from 'express';
 
 export const router = Router();
 
 type QueryParams = {
   userId: string
+  filter: Filter
+  sort: string
   page: string
   limit: string
-  filter: Filter
 };
 
 router.get('/expenses-for-user', async (req: Request<any, any, any, QueryParams>, res: Response, next: NextFunction) => {
@@ -20,7 +21,7 @@ router.get('/expenses-for-user', async (req: Request<any, any, any, QueryParams>
   const page = Math.abs(parseInt(req.query?.page)) || 1;
   const limit = Math.abs(parseInt(req.query?.limit)) || 10;
 
-  const opts: Options = { page, limit, filter: req.query?.filter };
+  const opts: Options = { page, limit, filter: req.query?.filter, sort: req.query?.sort };
 
   const [expenseError, expenseDetails] = await to(getExpensesForUser(userId, opts));
 

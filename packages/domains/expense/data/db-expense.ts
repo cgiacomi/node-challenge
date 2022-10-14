@@ -1,27 +1,78 @@
-import { Expense, Filter } from '../types';
-import { PagingOptions, query } from '@nc/utils/db';
+import format = require('pg-format')
 
-const filterParser = (filter?: Filter): string => {
-  let filterClause = '';
+import { query } from '@nc/utils/db';
 
-  if (filter?.merchantName) {
-    filterClause += `AND merchant_name LIKE '${filter.merchantName}'`;
-  }
-  if (filter?.currency) {
-    filterClause += `AND currency LIKE '${filter.currency}'`;
-  }
-  if (filter?.status) {
-    filterClause += `AND status LIKE '${filter.status}'`;
-  }
+import { Expense, Filter, Options } from '../types';
 
-  return filterClause;
+const offsetParser = (page: number, limit: number): number => {
+  return (page - 1) * limit;
 };
 
-export function readExpense(userId: string, paging: PagingOptions, filter?: Filter): Promise<Expense[]> {
-  const offset = (paging.page - 1) * paging.limit;
+const filterParser = (filter?: Filter): [string, string[]] => {
+  let filterClause = '';
+  const filterValues: string[] = [];
 
-  const filterClause = filterParser(filter);
+  for (const key in filter) {
+    if (Object.prototype.hasOwnProperty.call(filter, key)) {
+      filterClause += ` AND ${key} = %L`;
+      filterValues.push(filter[key]);
+    }
+  }
 
-  return query(`SELECT * FROM expenses WHERE user_id = $1 ${filterClause} LIMIT $2 OFFSET $3`, [userId, paging.limit, offset])
+  return [filterClause, filterValues];
+};
+
+const sortParser = (sort?: string): [string, string[]] => {
+  if (sort) {
+    let sortClause = ' ORDER BY ';
+    const sortValues: string[] = [];
+
+    const args = sort.split(',');
+
+    for (const [index, value] of args.entries()) {
+      let sortOrder = ' ASC';
+      let propertyName = value;
+      const separator = ', ';
+
+      const descending: boolean = propertyName.startsWith('-');
+      if (descending) {
+        propertyName = propertyName.substring(1);
+        sortOrder = ' DESC';
+      }
+
+      if (index > 0 && index < args.length) {
+        sortClause += separator;
+      }
+      sortClause += `%I${sortOrder}`;
+      sortValues.push(propertyName);
+    }
+
+    return [sortClause, sortValues];
+  }
+
+  return ['', []];
+};
+
+const queryParser = (userId: string, options?: Options): string => {
+  let queryArgs: any[] = [userId];
+
+  const offset = offsetParser(options.page, options.limit);
+  const [filterClause, filterValues] = filterParser(options.filter);
+  const [orderClause, orderValues] = sortParser(options.sort);
+
+  // NOTE: this is not injection safe BUT we will make sure it is before sending it to the DB.
+  const constructedQuery = `SELECT * FROM expenses WHERE user_id = %L${filterClause}${orderClause} LIMIT %s OFFSET %s`;
+  queryArgs = queryArgs.concat(filterValues, orderValues, options.limit, offset);
+
+  // format() behaves like PostgreSQL's https://www.postgresql.org/docs/9.3/functions-string.html#FUNCTIONS-STRING-FORMAT
+  const safeSql = format(constructedQuery, ...queryArgs);
+
+  return safeSql;
+};
+
+export function readExpense(userId: string, options?: Options): Promise<Expense[]> {
+  const safeSql = queryParser(userId, options);
+
+  return query(safeSql)
     .then((response) => response.rows);
 }

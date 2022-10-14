@@ -16,7 +16,12 @@ export interface CleanExpense {
 }
 
 export interface Filter {
-  merchantName: string
-  currency: string
-  status: string
+  [index: string]: any
+}
+
+export interface Options {
+  page: number
+  limit: number
+  filter?: Filter
+  sort?: string
 }

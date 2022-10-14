@@ -104,6 +104,28 @@ Currently it is possible to only filter on the same property once, future versio
 
 Current supported filters include `merchantName`, `currency` and `status`.
 
+### Sorting
+
+Sorting is supported using simple query syntax based on the JSON API specification as can be seen [here](https://jsonapi.org/format/#fetching-sorting).
+
+It is possible to sort on multiple parameters using comma separated values like so.
+
+```bash
+    <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=merchant_name,currency
+```
+
+The following query will sort the results by merchant name and currency in an ascending fashion. To sort in a descending manner simply prefix the field name with a dash `-` like below. This will sort the results by merchant name `descending` and currency `ascending`.
+
+```bash
+    <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=-merchant_name,currency
+```
+
+It is also possible to apply the descending option to multiple parameters, like so.
+
+```bash
+    <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=-merchant_name,-currency
+```
+
 ### Unit tests
 
 A few more unit tests have been added to cater for the changes in the formatter, both for the User and Expense domain.

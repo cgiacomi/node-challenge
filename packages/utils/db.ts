@@ -3,11 +3,6 @@ import config from 'config';
 
 let db;
 
-export interface PagingOptions {
-  page: number
-  limit: number
-}
-
 export function connect() {
   db = new Client(config.db);
   return db.connect();
