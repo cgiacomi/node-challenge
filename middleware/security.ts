@@ -1,4 +1,6 @@
-export default function security(req, res, next) {
+import { NextFunction, Request, Response } from 'express';
+
+export default function security(req: Request, res: Response, next: NextFunction) {
   res.removeHeader('X-Powered-By');
 
   if (decodeURIComponent(req.url).includes('<script>')) {

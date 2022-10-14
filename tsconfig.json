@@ -13,6 +13,9 @@
       "node"
     ]
   },
+  "files": [
+    "custom.request.d.ts"
+  ],
   "exclude": [
     "node_modules"
   ],
@@ -23,4 +26,3 @@
     "test/**/*.ts"
   ]
 }
-  
