@@ -91,18 +91,18 @@ Filtering the results can be achieved using simple query syntax based on the JSO
 Here is an example.
 
 ```bash
-    <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter[merchantName]=Sliders
+    <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter[merchant_name]=Sliders
 ```
 
 This allows multiple filters to be applied at the same time, like so.
 
 ```bash
-    <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter[merchantName]=Sliders&filter[currency]=dkk
+    <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter[merchant_name]=Sliders&filter[currency]=dkk
 ```
 
 Currently it is possible to only filter on the same property once, future versions could support more complex filtering rules and patterns.
 
-Current supported filters include `merchantName`, `currency` and `status`.
+Current supported filters include `merchant_name`, `currency` and `status`.
 
 ### Sorting
 
