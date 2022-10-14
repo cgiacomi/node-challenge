@@ -3,7 +3,7 @@ import config from 'config';
 
 let db;
 
-export interface QueryOptions {
+export interface PagingOptions {
   page: number
   limit: number
 }

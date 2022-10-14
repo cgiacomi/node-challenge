@@ -179,4 +179,20 @@ describe('Given existing expenses for a user in the database', () => {
         .end(done);
     });
   });
+
+  describe('Get expenses for a specific user and filter the results', () => {
+    test('Expense route should return a valid collection of expenses when filtered by merchant name', (done) => {
+      Api.get('/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter[merchantName]=Sliders')
+        .expect(200)
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect((res) => {
+          assert.equal(res.body.length, 3);
+          assert(res.body[0].hasOwnProperty('merchant_name'));
+          assert(res.body[0].hasOwnProperty('amount_in_cents'));
+          assert(res.body[0].hasOwnProperty('currency'));
+          assert(res.body[0].hasOwnProperty('status'));
+        })
+        .end(done);
+    });
+  });
 });

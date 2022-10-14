@@ -20,7 +20,7 @@ router.get('/expenses-for-user', async (req: Request<any, any, any, QueryParams>
   const page = Math.abs(parseInt(req.query?.page)) || 1;
   const limit = Math.abs(parseInt(req.query?.limit)) || 10;
 
-  const opts: Options = { page, limit };
+  const opts: Options = { page, limit, filter: req.query?.filter };
 
   const [expenseError, expenseDetails] = await to(getExpensesForUser(userId, opts));
 
