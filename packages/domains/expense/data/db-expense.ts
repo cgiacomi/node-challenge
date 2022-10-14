@@ -20,9 +20,14 @@ const queryParser = (userId: string, options?: Options): string => {
   return safeSql;
 };
 
-export function readExpense(userId: string, options?: Options): Promise<Expense[]> {
+export function readExpenses(userId: string, options?: Options): Promise<Expense[]> {
   const safeSql = queryParser(userId, options);
 
   return query(safeSql)
     .then((response) => response.rows);
+}
+
+export function readExpense(expenseId: string): Promise<Expense> {
+  return query('SELECT * FROM expenses WHERE id = $1', [expenseId])
+    .then((response) => response.rows?.[0]);
 }

@@ -43,6 +43,7 @@
   "dependencies": {
     "@nc/domain-expense": "0.0.0",
     "@nc/domain-user": "0.0.0",
+    "@nc/domain-health": "0.0.0",
     "@nc/utils": "0.0.0",
     "config": "^3.3.0",
     "dotenv": "^10.0.0",

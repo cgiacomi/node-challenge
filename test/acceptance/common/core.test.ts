@@ -3,12 +3,7 @@ import { Api } from '../utils/api';
 describe('Given that we have a healthy service', () => {
   describe('Healtcheck', () => {
     test('Healthcheck route should return positively', (done) => {
-      Api.get('/healthcheck')
-        .expect(200, done);
-    });
-
-    test('Readiness route should return positively', (done) => {
-      Api.get('/readycheck')
+      Api.get('/api/healthcheck')
         .expect(200, done);
     });
   });

@@ -126,6 +126,14 @@ It is also possible to apply the descending option to multiple parameters, like 
     <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=-merchant_name,-currency
 ```
 
+### REST support
+
+The codebase has been refactored to be more RESTful, the routes have been refactored to take into account the Resourses `User` and `Expense`.
+
+The routes for the two resources are now more compliant with REST naming conventions, for example the routes now use the plural form.
+
+All the acceptance tests and unit tests have been also refactored to reflect the changes in the codebase.
+
 ### Unit tests
 
 A few more unit tests have been added to cater for the changes in the formatter, both for the User and Expense domain.

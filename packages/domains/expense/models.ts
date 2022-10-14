@@ -1,10 +1,10 @@
-import { format } from './formatter';
 import { isUUID } from 'validator';
-import { readExpense } from './data/db-expense';
 import { to } from '@nc/utils/async';
 
 import { BadRequest, InternalError, NotFound } from '@nc/utils/errors';
 import { Expense, Options } from './types';
+import { format, formatMany } from './formatter';
+import { readExpense, readExpenses } from './data/db-expense';
 
 export async function getExpensesForUser(userId?: string, options?: Options): Promise<Expense[]> {
   if (!userId) {
@@ -15,7 +15,7 @@ export async function getExpensesForUser(userId?: string, options?: Options): Pr
     throw BadRequest('userId property is not a valid UUID.');
   }
 
-  const [dbError, rawExpenses] = await to(readExpense(userId, options));
+  const [dbError, rawExpenses] = await to(readExpenses(userId, options));
 
   if (dbError) {
     throw InternalError(`Error fetching data from the DB: ${dbError.message}`);
@@ -25,5 +25,27 @@ export async function getExpensesForUser(userId?: string, options?: Options): Pr
     throw NotFound(`Could not find expenses with for user with id ${userId}`);
   }
 
-  return format(rawExpenses);
+  return formatMany(rawExpenses);
+}
+
+export async function getExpenseDetails(expenseId?: string): Promise<Expense> {
+  if (!expenseId) {
+    throw BadRequest('expenseId property is missing.');
+  }
+
+  if (!isUUID(expenseId)) {
+    throw BadRequest('expenseId property is not a valid UUID.');
+  }
+
+  const [dbError, rawExpense] = await to(readExpense(expenseId));
+
+  if (dbError) {
+    throw InternalError(`Error fetching data from the DB: ${dbError.message}`);
+  }
+
+  if (!rawExpense) {
+    throw NotFound(`Could not find expense with id ${expenseId}`);
+  }
+
+  return format(rawExpense);
 }

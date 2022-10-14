@@ -1,6 +1,6 @@
 import { Expense } from '../types';
 
-import { format, secureTrim } from '../formatter';
+import { formatMany, secureTrimMany } from '../formatter';
 
 describe('[Packages | Expense-domain | Formatter] format', () => {
   test('format should return instances of expenses that fits the API model, based on the db raw value', () => {
@@ -18,7 +18,7 @@ describe('[Packages | Expense-domain | Formatter] format', () => {
       },
     ];
 
-    return expect(format(expenses)).toEqual([
+    return expect(formatMany(expenses)).toEqual([
       {
         id: 'dummy-id',
         merchant_name: 'Apple',
@@ -48,7 +48,7 @@ describe('[Packages | Expense-domain | Formatter] secureTrim', () => {
       },
     ];
 
-    return expect(secureTrim(expenses)).toEqual(
+    return expect(secureTrimMany(expenses)).toEqual(
       [
         {
           merchant_name: 'apple',

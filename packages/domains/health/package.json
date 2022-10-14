@@ -1,0 +1,9 @@
+{
+  "name": "@nc/domain-health",
+  "version": "0.0.0",
+  "description": "Health domain logic",
+  "private": true,
+  "dependencies": {
+    "express": "^4.17.0"
+  }
+}
