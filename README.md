@@ -58,6 +58,8 @@ Happy hacking 😁!
 
 ## What Have I done?
 
+The following have been completed more or less in chronological order. some areas have been revisited and refactored, for example the `Basic Expense route` has been refactored various times, but the list below serves to help show the train of thought of how I worked with the API and how it arrived at what it is currently.
+
 ### Typescript types
 
 The codebase has been enriched to support more explicit types both in the User domain and Expense domain.
@@ -141,3 +143,54 @@ A few more unit tests have been added to cater for the changes in the formatter,
 ### Acceptance tests
 
 More acceptance tests have been added to verify that the changes to the code do not break any existing code (regression testing), as well as all the new features are covered by simple functional tests.
+
+### Codebase refactoring
+
+The codebase has been refactored to reflect a more losely coupled approach. The entry point `server.ts` has been refactored to extract the various components `Application`, `Routes` and the `Server` in a way to enhance both readability and ensure a cleaner separation of concern between the individual parts.
+
+### Authentication
+
+Added simple authentication using JWT webtokens. All the API routes under `/api` require authentication. The authentication part assumes that the user registration and authentication is handled by another microservice, possibly a `User` service which returns a valid JWT token.
+
+DISCLAIMER: The authentication is simply for the purposes of the challenge and assumes an `email` property is present in the JWT token. The email is not currently used for anything but simply to showcase the ease of adding authentication to the node/typescript API. In a real world scenario the token would potentially contain the `id` of the user which could be used to ensure the API only returns the data belonging to the authenticated user. Furthermore the authentication part, although usable is NOT FOR PRODUCTION but simply for demo purposes.
+
+Here is the sample token used in the project, the token does not expire (a real token would have a short lived life, but this is just for the purposes of the challenge).
+
+The payload of the dummy token which can be used to test the routes.
+
+```JSON
+{
+  "sub": "1234567890",
+  "iss": "pleo.io",
+  "aud": "amazing-api.pleo.io",
+  "name": "Christian Giacomi",
+  "iat": 1516239022,
+  "email": "christiangiacomi@gmail.com"
+}
+```
+
+Here is the actual JWT token that is required in the header when calling the API.
+
+```bash
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoicGxlby5pbyIsImF1ZCI6ImFtYXppbmctYXBpLnBsZW8uaW8iLCJuYW1lIjoiQ2hyaXN0aWFuIEdpYWNvbWkiLCJpYXQiOjE1MTYyMzkwMjIsImVtYWlsIjoiY2hyaXN0aWFuZ2lhY29taUBnbWFpbC5jb20ifQ.moMmjupUFMVreBFuBAY3YEb1K7FbPtnaB4_oXtvqOOY
+```
+
+The routes require the token to be in the header using the standard `Authorization: Bearer [...]` header.
+
+Here is a sample route using the above mentioned token.
+
+```bash
+curl --request GET \
+  --url 'http://localhost:9001/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter%5Bstatus%5D=processed&sort=merchant_name' \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoicGxlby5pbyIsImF1ZCI6ImFtYXppbmctYXBpLnBsZW8uaW8iLCJuYW1lIjoiQ2hyaXN0aWFuIEdpYWNvbWkiLCJpYXQiOjE1MTYyMzkwMjIsImVtYWlsIjoiY2hyaXN0aWFuZ2lhY29taUBnbWFpbC5jb20ifQ.moMmjupUFMVreBFuBAY3YEb1K7FbPtnaB4_oXtvqOOY'
+```
+
+Should you want to disable the authentication simply comment out the following line in `app.ts`
+
+```javascript
+this.app.use('/api/', authenticatedRoute({ session: false }), Router);
+```
+
+In regards to the authentication there are a couple of comments in the code to help showcase what the authentication could actually do, like how to retrieve an authenticated user, or how to validate the user.
+
+Please note that the acceptance tests also use this token for testing purposes. There are also a couple of tests to ensure the authentication is set. If the authentication is removed these test will fail.

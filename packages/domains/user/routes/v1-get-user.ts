@@ -12,6 +12,8 @@ type QueryParams = {
 };
 
 export const getAllUsers = async (req: Request<any, any, any, QueryParams>, res: Response, next: NextFunction) => {
+  // const authenticatedUser = req.user; // This line is here to showcase how one can retrieve the authenticated user in the route handler.
+
   const [error, usersDetails] = await to(getAllUserDetails());
 
   if (error) {
@@ -28,6 +30,8 @@ export const getAllUsers = async (req: Request<any, any, any, QueryParams>, res:
 export const getUser = async (req: Request<any, any, any, QueryParams>, res: Response, next: NextFunction) => {
   const userId = req.params.userId;
   const [error, userDetails] = await to(getUserDetails(userId));
+
+  // const authenticatedUser = req.user; // This line is here to showcase how one can retrieve the authenticated user in the route handler.
 
   if (error) {
     return next(new ApiError(error, error.status, `Could not get user details: ${error}`, error.title, req));

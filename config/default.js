@@ -3,7 +3,9 @@ const path = require('path');
 
 module.exports = {
   auth: {
-    jwtSecret: '',
+    jwtSecret: 'TOP_SECRET',
+    issuer: 'pleo.io',
+    audience: 'amazing-api.pleo.io',
   },
   db: {
     host: '0.0.0.0',

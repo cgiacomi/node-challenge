@@ -9,7 +9,7 @@ const logger = Logger('server');
 const httpsOptions: HttpsOptions = config.get('https');
 const port: number = config.get('port');
 
-const app = new App();
+const app = new App(config);
 app.initialize();
 
 const server = createServer(app.getApplication(), httpsOptions);

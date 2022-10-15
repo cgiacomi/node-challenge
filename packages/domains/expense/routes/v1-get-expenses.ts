@@ -22,6 +22,8 @@ export const getAllExpenses = async (req: Request<any, any, any, QueryParams>, r
   const page = Math.abs(parseInt(req.query?.page)) || 1;
   const limit = Math.abs(parseInt(req.query?.limit)) || 10;
 
+  // const authenticatedUser = req.user; // This line is here to showcase how one can retrieve the authenticated user in the route handler.
+
   const opts: Options = { page, limit, filter: req.query?.filter, sort: req.query?.sort };
 
   const [expenseError, expenseDetails] = await to(getExpensesForUser(userId, opts));
@@ -40,6 +42,8 @@ export const getAllExpenses = async (req: Request<any, any, any, QueryParams>, r
 export const getExpense = async (req: Request<any, any, any, QueryParams>, res: Response, next: NextFunction) => {
   const expenseId = req.params.expenseId;
   const [expenseError, expenseDetails] = await to(getExpenseDetails(expenseId));
+
+  // const authenticatedUser = req.user; // This line is here to showcase how one can retrieve the authenticated user in the route handler.
 
   if (expenseError) {
     return next(new ApiError(expenseError, expenseError.status, `Could not get expense details: ${expenseError}`, expenseError.title, req));
