@@ -1,7 +1,7 @@
 import { Api } from '../../utils/api';
 import assert from 'assert';
 
-const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoicGxlby5pbyIsImF1ZCI6ImFtYXppbmctYXBpLnBsZW8uaW8iLCJuYW1lIjoiQ2hyaXN0aWFuIEdpYWNvbWkiLCJpYXQiOjE1MTYyMzkwMjIsImVtYWlsIjoiY2hyaXN0aWFuZ2lhY29taUBnbWFpbC5jb20ifQ.moMmjupUFMVreBFuBAY3YEb1K7FbPtnaB4_oXtvqOOY';
+const token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYTE0MGEyOS1hZTgwLTRmMGUtYTYyZC02YzJkMmJjOGE0NzQiLCJpc3MiOiJwbGVvLmlvIiwiYXVkIjoiYW1hemluZy1hcGkucGxlby5pbyIsIm5hbWUiOiJDaHJpc3RpYW4gR2lhY29taSIsImlhdCI6MTUxNjIzOTAyMiwiZW1haWwiOiJjaHJpc3RpYW5naWFjb21pQGdtYWlsLmNvbSJ9.VcrTQiT8GwmJj0EL0I1mP9q75DtH3BfAOCh_E4v5HPI';
 
 describe('Authenticated expense routes', () => {
   describe('Get expenses for a specific user without auth token', () => {
@@ -14,8 +14,8 @@ describe('Authenticated expense routes', () => {
 
 describe('Given existing expenses for a user in the database', () => {
   describe('Get expenses for a specific user', () => {
-    test('Expense route should return a valid collection of expenses with a valid user id', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474')
+    test('Expense route should return a valid collection of expenses the authenticated user', async () => {
+      const res = await Api.get('/api/v1/expenses')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -28,31 +28,11 @@ describe('Given existing expenses for a user in the database', () => {
       assert(body.data[0].hasOwnProperty('currency'));
       assert(body.data[0].hasOwnProperty('status'));
     });
-
-    test('Expense route should return an empty collection with a non existing user id', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a471')
-        .set('Authorization', token);
-
-      assert.equal(res.statusCode, 200);
-      assert.equal(res.headers['content-type'], 'application/json; charset=utf-8');
-
-      const { body } = res;
-      assert.equal(body.data.length, 0);
-    });
   });
 
-  describe('Get expenses for an invalid userId in the request', () => {
-    test('Expense route should return an error of type 400', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=111')
-        .set('Authorization', token);
-
-      assert.equal(res.statusCode, 400);
-    });
-  });
-
-  describe('Get expenses for a specific user and limit the results', () => {
+  describe('Get expenses for an authenticated user and limit the results', () => {
     test('Expense route should return 1 result when limit is set to 1', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&limit=1')
+      const res = await Api.get('/api/v1/expenses?limit=1')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -67,7 +47,7 @@ describe('Given existing expenses for a user in the database', () => {
     });
 
     test('Expense route should return 2 result when limit is set to 2', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&limit=2')
+      const res = await Api.get('/api/v1/expenses?limit=2')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -82,7 +62,7 @@ describe('Given existing expenses for a user in the database', () => {
     });
 
     test('Expense route should return the default number of results when limit is set to 0', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&limit=0')
+      const res = await Api.get('/api/v1/expenses?limit=0')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -93,7 +73,7 @@ describe('Given existing expenses for a user in the database', () => {
     });
 
     test('Expense route should return the absolute value of results when limit is set to a negative number', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&limit=-1')
+      const res = await Api.get('/api/v1/expenses?limit=-1')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -116,7 +96,7 @@ describe('Given existing expenses for a user in the database', () => {
       // I will try to expand the test once I have completed the other parts so that the test is more
       // meaningful.
 
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&page=1&limit=1')
+      const res = await Api.get('/api/v1/expenses?page=1&limit=1')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -135,7 +115,7 @@ describe('Given existing expenses for a user in the database', () => {
       // I will try to expand the test once I have completed the other parts so that the test is more
       // meaningful. (sorry for repeating this note.)
 
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&page=2&limit=1')
+      const res = await Api.get('/api/v1/expenses?page=2&limit=1')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -154,7 +134,7 @@ describe('Given existing expenses for a user in the database', () => {
       // I will try to expand the test once I have completed the other parts so that the test is more
       // meaningful. (sorry for repeating this note.)
 
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&limit=1')
+      const res = await Api.get('/api/v1/expenses?&limit=1')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -173,7 +153,7 @@ describe('Given existing expenses for a user in the database', () => {
       // I will try to expand the test once I have completed the other parts so that the test is more
       // meaningful. (sorry for repeating this note.)
 
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&limit=1&page=0')
+      const res = await Api.get('/api/v1/expenses?limit=1&page=0')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -192,7 +172,7 @@ describe('Given existing expenses for a user in the database', () => {
       // I will try to expand the test once I have completed the other parts so that the test is more
       // meaningful. (sorry for repeating this note.)
 
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&limit=1&page=-1')
+      const res = await Api.get('/api/v1/expenses?limit=1&page=-1')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -205,9 +185,9 @@ describe('Given existing expenses for a user in the database', () => {
     });
   });
 
-  describe('Get expenses for a specific user and filter the results', () => {
+  describe('Get expenses for the authenticated user and filter the results', () => {
     test('Expense route should return a valid collection of expenses when filtered by merchant name', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter[merchant_name]=Sliders')
+      const res = await Api.get('/api/v1/expenses?filter[merchant_name]=Sliders')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -223,7 +203,7 @@ describe('Given existing expenses for a user in the database', () => {
     });
 
     test('Expense route should return a valid collection of expenses when filtered by multiple fields', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter[merchant_name]=Donkey Republic&filter[status]=processed')
+      const res = await Api.get('/api/v1/expenses?filter[merchant_name]=Donkey Republic&filter[status]=processed')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -240,9 +220,9 @@ describe('Given existing expenses for a user in the database', () => {
     });
   });
 
-  describe('Get expenses for a specific user and sort the results', () => {
+  describe('Get expenses for the authenticated user and sort the results', () => {
     test('Expense route should return a valid collection of expenses when filtered by merchant name ascending', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=merchant_name')
+      const res = await Api.get('/api/v1/expenses?sort=merchant_name')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -258,7 +238,7 @@ describe('Given existing expenses for a user in the database', () => {
     });
 
     test('Expense route should return a valid collection of expenses when filtered by merchant name descending', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=-merchant_name')
+      const res = await Api.get('/api/v1/expenses?sort=-merchant_name')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -274,7 +254,7 @@ describe('Given existing expenses for a user in the database', () => {
     });
 
     test('Expense route should return a valid collection of expenses when filtered by amount_in_cents and merchant_name', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=amount_in_cents,merchant_name')
+      const res = await Api.get('/api/v1/expenses?sort=amount_in_cents,merchant_name')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);
@@ -290,7 +270,7 @@ describe('Given existing expenses for a user in the database', () => {
     });
 
     test('Expense route should return a valid collection of expenses when filtered by amount_in_cents descending and merchant_name', async () => {
-      const res = await Api.get('/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=-amount_in_cents,merchant_name')
+      const res = await Api.get('/api/v1/expenses?sort=-amount_in_cents,merchant_name')
         .set('Authorization', token);
 
       assert.equal(res.statusCode, 200);

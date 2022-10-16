@@ -2,16 +2,6 @@ import { capitalize } from '@nc/utils/capitalize';
 
 import { CleanUser, User } from './types';
 
-export function secureTrimMany(users: User[]): CleanUser[] {
-  const trimmedItems: CleanUser[] = [];
-
-  users.forEach((user: User) => {
-    trimmedItems.push(secureTrim(user));
-  });
-
-  return trimmedItems;
-}
-
 export function secureTrim(user: User): CleanUser {
   // Using JSON.stringify() to filter out unwanted fields has the side effect
   // of converting the object to a string, which will break the specified
@@ -23,16 +13,6 @@ export function secureTrim(user: User): CleanUser {
   const { id, ssn, ...cleanUser } = user;
 
   return cleanUser;
-}
-
-export function formatMany(rawUsers: User[]): User[] {
-  const formattedItems: User[] = [];
-
-  rawUsers.forEach((rawUser) => {
-    formattedItems.push(format(rawUser));
-  });
-
-  return formattedItems;
 }
 
 export function format(rawUser: User): User {

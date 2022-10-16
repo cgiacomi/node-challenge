@@ -14,6 +14,7 @@ export const configureAuthStrategy = (options: AuthOptions) => {
     secretOrKey: options.jwtSecret,
     issuer: options.issuer,
     audience: options.audience,
+    ignoreExpiration: true, // Note: This has been set to true just for the purposes of the challenge.
   };
 
   passport.use(
@@ -21,8 +22,9 @@ export const configureAuthStrategy = (options: AuthOptions) => {
       try {
         if (token.hasOwnProperty('email')) {
           // DISCLAIMER: this is done simply to showcase the ease of adding
-          // authentication to the API.
-          return done(null, { email: token.email, id: token.sub });
+          // authentication to the API. Currently the strategy is set to ignore
+          // the `exp` claim in the token.
+          return done(null, { email: token.email, userId: token.sub });
         }
 
         // assume invalid token

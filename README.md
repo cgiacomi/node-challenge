@@ -56,9 +56,9 @@ The command above will run the following test suites sequentially:
 
 Happy hacking 😁!
 
-## What Have I done?
+## What Have I done with the API?
 
-The following have been completed more or less in chronological order. some areas have been revisited and refactored, for example the `Basic Expense route` has been refactored various times, but the list below serves to help show the train of thought of how I worked with the API and how it arrived at what it is currently.
+The following have been completed more or less in chronological order. some areas have been revisited and refactored, for example the `Basic Expense route` has been refactored various times, but the list below serves to help show the train of thought of how I worked with the API and how it arrived at what it is currently. The tests, both unit tests and acceptance test have been added along with the various features I added and changes that have been carried out.
 
 ### Typescript types
 
@@ -136,14 +136,6 @@ The routes for the two resources are now more compliant with REST naming convent
 
 All the acceptance tests and unit tests have been also refactored to reflect the changes in the codebase.
 
-### Unit tests
-
-A few more unit tests have been added to cater for the changes in the formatter, both for the User and Expense domain.
-
-### Acceptance tests
-
-More acceptance tests have been added to verify that the changes to the code do not break any existing code (regression testing), as well as all the new features are covered by simple functional tests.
-
 ### Codebase refactoring
 
 The codebase has been refactored to reflect a more losely coupled approach. The entry point `server.ts` has been refactored to extract the various components `Application`, `Routes` and the `Server` in a way to enhance both readability and ensure a cleaner separation of concern between the individual parts.
@@ -152,7 +144,7 @@ The codebase has been refactored to reflect a more losely coupled approach. The 
 
 Added simple authentication using JWT webtokens. All the API routes under `/api` require authentication. The authentication part assumes that the user registration and authentication is handled by another microservice, possibly a `User` service which returns a valid JWT token.
 
-DISCLAIMER: The authentication is simply for the purposes of the challenge and assumes an `email` property is present in the JWT token. The email is not currently used for anything but simply to showcase the ease of adding authentication to the node/typescript API. In a real world scenario the token would potentially contain the `id` of the user which could be used to ensure the API only returns the data belonging to the authenticated user. Furthermore the authentication part, although usable is NOT FOR PRODUCTION but simply for demo purposes.
+DISCLAIMER: The authentication is simply for the purposes of the challenge and assumes an `email` and `sub` claims are present in the JWT token. The email is not currently used for anything but simply to showcase the ease of adding custom claims and authentication to the node/typescript API. The token does NOT contain an `exp` claim, and expiry verification is DISABLED on PURPOSE for the purposes of this challenge
 
 Here is the sample token used in the project, the token does not expire (a real token would have a short lived life, but this is just for the purposes of the challenge).
 
@@ -160,7 +152,7 @@ The payload of the dummy token which can be used to test the routes.
 
 ```JSON
 {
-  "sub": "1234567890",
+  "sub": "da140a29-ae80-4f0e-a62d-6c2d2bc8a474",
   "iss": "pleo.io",
   "aud": "amazing-api.pleo.io",
   "name": "Christian Giacomi",
@@ -169,10 +161,10 @@ The payload of the dummy token which can be used to test the routes.
 }
 ```
 
-Here is the actual JWT token that is required in the header when calling the API.
+Here is the actual JWT token. The token does NOT contain an `exp` claim as this would make it difficult to test the code that has been written for this challenge. The acceptance tests use this exact token for simplicity, but in a more realistic scenario the test would generate a valid token that expires and use that token instead of a hard coded one like I have used.
 
 ```bash
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoicGxlby5pbyIsImF1ZCI6ImFtYXppbmctYXBpLnBsZW8uaW8iLCJuYW1lIjoiQ2hyaXN0aWFuIEdpYWNvbWkiLCJpYXQiOjE1MTYyMzkwMjIsImVtYWlsIjoiY2hyaXN0aWFuZ2lhY29taUBnbWFpbC5jb20ifQ.moMmjupUFMVreBFuBAY3YEb1K7FbPtnaB4_oXtvqOOY
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYTE0MGEyOS1hZTgwLTRmMGUtYTYyZC02YzJkMmJjOGE0NzQiLCJpc3MiOiJwbGVvLmlvIiwiYXVkIjoiYW1hemluZy1hcGkucGxlby5pbyIsIm5hbWUiOiJDaHJpc3RpYW4gR2lhY29taSIsImlhdCI6MTUxNjIzOTAyMiwiZW1haWwiOiJjaHJpc3RpYW5naWFjb21pQGdtYWlsLmNvbSJ9.VcrTQiT8GwmJj0EL0I1mP9q75DtH3BfAOCh_E4v5HPI
 ```
 
 The routes require the token to be in the header using the standard `Authorization: Bearer [...]` header.
@@ -181,16 +173,28 @@ Here is a sample route using the above mentioned token.
 
 ```bash
 curl --request GET \
-  --url 'http://localhost:9001/api/v1/expenses/?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter%5Bstatus%5D=processed&sort=merchant_name' \
-  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiaXNzIjoicGxlby5pbyIsImF1ZCI6ImFtYXppbmctYXBpLnBsZW8uaW8iLCJuYW1lIjoiQ2hyaXN0aWFuIEdpYWNvbWkiLCJpYXQiOjE1MTYyMzkwMjIsImVtYWlsIjoiY2hyaXN0aWFuZ2lhY29taUBnbWFpbC5jb20ifQ.moMmjupUFMVreBFuBAY3YEb1K7FbPtnaB4_oXtvqOOY'
+  --url 'http://localhost:9001/api/v1/expenses/?filter%5Bstatus%5D=processed&sort=merchant_name' \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkYTE0MGEyOS1hZTgwLTRmMGUtYTYyZC02YzJkMmJjOGE0NzQiLCJpc3MiOiJwbGVvLmlvIiwiYXVkIjoiYW1hemluZy1hcGkucGxlby5pbyIsIm5hbWUiOiJDaHJpc3RpYW4gR2lhY29taSIsImlhdCI6MTUxNjIzOTAyMiwiZW1haWwiOiJjaHJpc3RpYW5naWFjb21pQGdtYWlsLmNvbSJ9.VcrTQiT8GwmJj0EL0I1mP9q75DtH3BfAOCh_E4v5HPI'
 ```
 
-Should you want to disable the authentication simply comment out the following line in `app.ts`
+Again please note that the acceptance tests also use this token for testing purposes. There are also a couple of tests to ensure the authentication is set.
 
-```javascript
-this.app.use('/api/', authenticatedRoute({ session: false }), Router);
-```
+### Authentication revisited
 
-In regards to the authentication there are a couple of comments in the code to help showcase what the authentication could actually do, like how to retrieve an authenticated user, or how to validate the user.
+After re-reading the instructions I noticed a mistaken assumption on my part, and have therefore refactored the authentication to fullfil the instructions as best as possible. Meaning this statement `Whenever a user of the app navigates to the expenses view, it calls this API to collect the list of expenses for that user.`
 
-Please note that the acceptance tests also use this token for testing purposes. There are also a couple of tests to ensure the authentication is set. If the authentication is removed these test will fail.
+The jwt token now assumes that the user id is part of the actual token, just like a `User` API would issue. The `userId` is set in the `sub` claim of the token as is permissible by [RFC 7519 sec 4.1.2](https://www.rfc-editor.org/rfc/rfc7519#section-4.1.2).
+
+The acceptance tests have been also refactor to support this change in the API.
+
+The userId is no longer passed as a query string, but is taken directly from the JWT token, so that the API in this incarnation only returns data for a properly authenticated user.
+
+The `userId` which is still part of the user domain route is there to fullfil the requirements of a valid REST API, and can be used to also check is a user is willfully hacking the URL when calling the API.
+
+### Unit tests
+
+A few more unit tests have been added to cater for the changes in the formatter, both for the User and Expense domain.
+
+### Acceptance tests
+
+More acceptance tests have been added to verify that the changes to the code do not break any existing code (regression testing), as well as all the new features are covered by simple functional tests. The tests were added along with the various changes.

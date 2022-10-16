@@ -28,7 +28,15 @@ export async function getExpensesForUser(userId?: string, options?: Options): Pr
   return formatMany(rawExpenses);
 }
 
-export async function getExpenseDetails(expenseId?: string): Promise<Expense> {
+export async function getExpenseDetails(userId?: string, expenseId?: string): Promise<Expense> {
+  if (!userId) {
+    throw BadRequest('userId property is missing.');
+  }
+
+  if (!isUUID(userId)) {
+    throw BadRequest('userId property is not a valid UUID.');
+  }
+
   if (!expenseId) {
     throw BadRequest('expenseId property is missing.');
   }

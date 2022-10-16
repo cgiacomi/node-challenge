@@ -1,9 +1,9 @@
-import { ApiError } from '@nc/utils/errors';
+import { getUserDetails } from '../model';
+import { secureTrim } from '../formatter';
 import { to } from '@nc/utils/async';
 
-import { getAllUserDetails, getUserDetails } from '../model';
+import { ApiError, BadRequest } from '@nc/utils/errors';
 import { NextFunction, Request, Response, Router } from 'express';
-import { secureTrim, secureTrimMany } from '../formatter';
 
 export const router = Router();
 
@@ -11,27 +11,16 @@ type QueryParams = {
   userId: string
 };
 
-export const getAllUsers = async (req: Request<any, any, any, QueryParams>, res: Response, next: NextFunction) => {
-  // const authenticatedUser = req.user; // This line is here to showcase how one can retrieve the authenticated user in the route handler.
-
-  const [error, usersDetails] = await to(getAllUserDetails());
-
-  if (error) {
-    return next(new ApiError(error, error.status, `Could not get all users details: ${error}`, error.title, req));
-  }
-
-  if (!usersDetails) {
-    return res.json({ data: [] });
-  }
-
-  return res.json({ data: secureTrimMany(usersDetails) });
-};
-
 export const getUser = async (req: Request<any, any, any, QueryParams>, res: Response, next: NextFunction) => {
-  const userId = req.params.userId;
-  const [error, userDetails] = await to(getUserDetails(userId));
+  const authenticatedUser = req.user;
 
-  // const authenticatedUser = req.user; // This line is here to showcase how one can retrieve the authenticated user in the route handler.
+  const userId = req.params.userId;
+  if (userId !== authenticatedUser.userId) {
+    const badRequest = BadRequest('userId does not match authenticated user');
+    return next(new ApiError(badRequest, badRequest.status, `Could not get user details: ${badRequest}`, badRequest.title, req));
+  }
+
+  const [error, userDetails] = await to(getUserDetails(userId));
 
   if (error) {
     return next(new ApiError(error, error.status, `Could not get user details: ${error}`, error.title, req));

@@ -30,7 +30,6 @@ export class App {
     this.app.use('/healthcheck', healthRoutes);
 
     this.app.use('/api/', authenticatedRoute({ session: false }), Router);
-    // this.app.use('/api/', Router); // Uncomment to remove the required authentication for the routes. (this is here for demo purposes simply for the challenge)
 
     // eslint-disable-next-line
     this.app.use((req, res, next) => {
