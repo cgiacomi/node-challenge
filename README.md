@@ -80,6 +80,8 @@ The API support paging for the Expense domain, using the following query paramet
 
 The paging caters for erroneous values, including negative numbers.
 
+(UPDATE: This route is the original one created as I was working on the API, this no longer works with the latest changes, pls refer to the [Supported Routes](#supported-routes) section.)
+
 ```bash
     <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&page=1&limit=1
 ```
@@ -92,11 +94,15 @@ Filtering the results can be achieved using simple query syntax based on the JSO
 
 Here is an example.
 
+(UPDATE: This route is the original one created as I was working on the API, this no longer works with the latest changes, pls refer to the [Supported Routes](#supported-routes) section.)
+
 ```bash
     <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter[merchant_name]=Sliders
 ```
 
 This allows multiple filters to be applied at the same time, like so.
+
+(UPDATE: This route is the original one created as I was working on the API, this no longer work with the latest changes, pls refer to the [Supported Routes](#supported-routes) section.)
 
 ```bash
     <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&filter[merchant_name]=Sliders&filter[currency]=dkk
@@ -112,17 +118,23 @@ Sorting is supported using simple query syntax based on the JSON API specificati
 
 It is possible to sort on multiple parameters using comma separated values like so.
 
+(UPDATE: This route is the original one created as I was working on the API, this no longer work with the latest changes, pls refer to the [Supported Routes](#supported-routes) section.)
+
 ```bash
     <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=merchant_name,currency
 ```
 
 The following query will sort the results by merchant name and currency in an ascending fashion. To sort in a descending manner simply prefix the field name with a dash `-` like below. This will sort the results by merchant name `descending` and currency `ascending`.
 
+(UPDATE: This route is the original one created as I was working on the API, this no longer work with the latest changes, pls refer to the [Supported Routes](#supported-routes) section.)
+
 ```bash
     <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=-merchant_name,currency
 ```
 
 It is also possible to apply the descending option to multiple parameters, like so.
+
+(UPDATE: This route is the original one created as I was working on the API, this no longer work with the latest changes, pls refer to the [Supported Routes](#supported-routes) section.)
 
 ```bash
     <BASE URI>/expense/v1/expenses-for-user?userId=da140a29-ae80-4f0e-a62d-6c2d2bc8a474&sort=-merchant_name,-currency
@@ -135,6 +147,8 @@ The codebase has been refactored to be more RESTful, the routes have been refact
 The routes for the two resources are now more compliant with REST naming conventions, for example the routes now use the plural form.
 
 All the acceptance tests and unit tests have been also refactored to reflect the changes in the codebase.
+
+The following are the routes after the REST support refactoring.
 
 ### Codebase refactoring
 
@@ -198,3 +212,65 @@ A few more unit tests have been added to cater for the changes in the formatter,
 ### Acceptance tests
 
 More acceptance tests have been added to verify that the changes to the code do not break any existing code (regression testing), as well as all the new features are covered by simple functional tests. The tests were added along with the various changes.
+
+### Supported Routes
+
+The following are routes that can be called in the API as the code stands. Paging, sorting, and filtering are only supported for the `Expense` route.
+
+All routes require an authenticated user, and a valid JWT token in the header of the requests. Pls refer to the [Authentication](#authentication) section.
+
+#### Paging
+
+The API supports paging for the Expense domain, using the following query parameters `limit` and `page`
+
+```bash
+    <BASE URI>/api/v1/expenses/?page=1&limit=1
+```
+
+#### Filtering
+
+The API supports filtering for the Expense domain. Results can be filtered using simple query syntax based on the JSON API specification as can be seen [here](https://jsonapi.org/recommendations/#filtering).
+
+```bash
+    <BASE URI>/api/v1/expenses/?filter[merchant_name]=Sliders
+```
+
+Multiple Filters
+
+```bash
+    <BASE URI>/api/v1/expenses/?filter[merchant_name]=Sliders&filter[currency]=DKK
+```
+
+#### Sorting
+
+The API supports sorting for the Expense domain. Sorting is supported using simple query syntax based on the JSON API specification as can be seen [here](https://jsonapi.org/format/#fetching-sorting).
+
+```bash
+    <BASE URI>/api/v1/expenses/?sort=merchant_name,currency
+```
+
+Sorting on `merchant_name` descending and currency ascending
+
+```bash
+    <BASE URI>/api/v1/expenses/?sort=-merchant_name,currency
+```
+
+Sorting descending on multiple parameters
+
+```bash
+    <BASE URI>/api/v1/expenses/?sort=-merchant_name,-currency
+```
+
+#### Other routes
+
+View the details of a specific expense for the authenticated user.
+
+```bash
+    <BASE URI>/api/v1/expenses/<expenseId>
+```
+
+View the details for the authenticated user.
+
+```bash
+    <BASE URI>/api/v1/users/da140a29-ae80-4f0e-a62d-6c2d2bc8a474
+```
