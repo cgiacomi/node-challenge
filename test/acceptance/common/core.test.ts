@@ -6,11 +6,6 @@ describe('Given that we have a healthy service', () => {
       Api.get('/healthcheck')
         .expect(200, done);
     });
-
-    test('Readiness route should return positively', (done) => {
-      Api.get('/readycheck')
-        .expect(200, done);
-    });
   });
 
   describe('Security', () => {

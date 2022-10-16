@@ -2,10 +2,17 @@ require('dotenv').config();
 const path = require('path');
 
 module.exports = {
+  auth: {
+    jwtSecret: 'TOP_SECRET',
+    issuer: 'pleo.io',
+    audience: 'amazing-api.pleo.io',
+  },
   db: {
     host: '0.0.0.0',
     port: 5432,
     database: 'challenge',
+    user: 'example',
+    password: 'example',
   },
   debug: {
     stackSize: 4,

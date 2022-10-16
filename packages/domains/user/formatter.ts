@@ -1,17 +1,21 @@
-import { User } from './types';
+import { capitalize } from '@nc/utils/capitalize';
 
-const publicFields = ['first_name', 'last_name', 'company_name'];
+import { CleanUser, User } from './types';
 
-export function capitalize(word) {
-  const str = `${word}`;
-  return str[0].toUpperCase() + str.slice(1);
+export function secureTrim(user: User): CleanUser {
+  // Using JSON.stringify() to filter out unwanted fields has the side effect
+  // of converting the object to a string, which will break the specified
+  // 'Content-Type' header which is set to application/json.
+  // Instead by using Destructuring assignment we can safely keep a real object
+  // with only the fields we want. It ofc reads a bit strange but it works best.
+
+  // eslint-disable-next-line
+  const { id, ssn, ...cleanUser } = user;
+
+  return cleanUser;
 }
 
-export function secureTrim(user: User): string {
-  return JSON.stringify(user, publicFields);
-}
-
-export function format(rawUser): User {
+export function format(rawUser: User): User {
   return {
     id: rawUser.id,
     first_name: capitalize(rawUser.first_name),

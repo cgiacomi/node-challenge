@@ -1,21 +1,34 @@
-import { ApiError } from '@nc/utils/errors';
 import { getUserDetails } from '../model';
-import { Router } from 'express';
 import { secureTrim } from '../formatter';
 import { to } from '@nc/utils/async';
 
+import { ApiError, BadRequest } from '@nc/utils/errors';
+import { NextFunction, Request, Response, Router } from 'express';
+
 export const router = Router();
 
-router.get('/get-user-details', async (req, res, next) => {
-  const [userError, userDetails] = await to(getUserDetails(req.query?.userId));
+type QueryParams = {
+  userId: string
+};
 
-  if (userError) {
-    return next(new ApiError(userError, userError.status, `Could not get user details: ${userError}`, userError.title, req));
+export const getUser = async (req: Request<any, any, any, QueryParams>, res: Response, next: NextFunction) => {
+  const authenticatedUser = req.user;
+
+  const userId = req.params.userId;
+  if (userId !== authenticatedUser.userId) {
+    const badRequest = BadRequest('userId does not match authenticated user');
+    return next(new ApiError(badRequest, badRequest.status, `Could not get user details: ${badRequest}`, badRequest.title, req));
+  }
+
+  const [error, userDetails] = await to(getUserDetails(userId));
+
+  if (error) {
+    return next(new ApiError(error, error.status, `Could not get user details: ${error}`, error.title, req));
   }
 
   if (!userDetails) {
-    return res.json({});
+    return res.json({ data: {} });
   }
 
-  return res.json(secureTrim(userDetails));
-});
+  return res.json({ data: secureTrim(userDetails) });
+};
